@@ -1,28 +1,36 @@
 //! Binary search algorithm
 
 /// This function implements the binary search algorithm
+/// 二分的基本思路是定义一个搜索区域，逐步收敛区域，区域内的值一定是在逼近搜索值
 pub fn binary_search<T: Ord>(input: &[T], key: T) -> Option<usize> {
     let len = input.len();
     if len == 0 {
         return None;
     }
 
+    // 搜索区域是 [0, len-1]
     let mut high = len - 1;
     let mut low: usize = 0;
+
     while low <= high {
-        // left + (right - left) / 2 就和 (left + right) / 2 的结果相同
-        // 但是有效防止了 left 和 right 太大直接相加导致溢出
+        // `low + (high - low) / 2` 就和 `(low + high) / 2` 的结果相同
+        // 但是有效防止了 low 和 high 太大直接相加导致溢出
         let middle = low + (high - low) / 2;
         let mid_value = &input[middle];
+
         if key == *mid_value {
+            // 找到正确值
             return Some(middle);
         } else if key > *mid_value {
+            // 搜索区域右移 [middle+1, high]
             low = middle + 1;
         } else {
+            // 搜索区域左移 [low, middle-1]
             high = middle - 1;
         }
     }
 
+    // 此时 low > high，故一定没找到值
     None
 }
 
