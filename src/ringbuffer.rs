@@ -50,6 +50,7 @@ impl<T> RingBuffer<T> {
             // Manually drop the head element
             unsafe {
                 let index = Self::position_to_index(self.capacity, self.head);
+                // println!("pop index: {:?}", index);
                 let old_value = ptr::read(self.buf.add(index));
                 drop(old_value);
             }
@@ -59,6 +60,7 @@ impl<T> RingBuffer<T> {
 
         // Calculate the index to push
         let index = Self::position_to_index(self.capacity, self.tail);
+        // println!("push index: {:?}", index);
         unsafe {
             ptr::write(self.buf.add(index), value);
         }
@@ -76,6 +78,7 @@ impl<T> RingBuffer<T> {
         }
 
         let index = Self::position_to_index(self.capacity, self.head);
+        // println!("pop index: {:?}", index);
         let p = unsafe {
             self.buf.add(index)
         };
@@ -100,11 +103,12 @@ impl<T> RingBuffer<T> {
             if offset >= 0 { offset }
             else { len as isize + offset };
 
-        if real_offset < 0 || real_offset > len as isize {
+        if real_offset < 0 || real_offset >= len as isize {
             return None;
         }
         
-        Some(Self::position_to_index(cap, position) + real_offset as usize)
+        // println!("offset: {:?}", real_offset);
+        Some(Self::position_to_index(cap, position + real_offset as usize))
     }
 
     /// Gets a value relative to the current index.
@@ -121,6 +125,7 @@ impl<T> RingBuffer<T> {
             self.len(),
             index
         );
+        // println!("get: {:?}", index);
         index.map(|i| {
             unsafe {
                 // Move pointer to specified element
@@ -165,3 +170,74 @@ impl<T> RingBuffer<T> {
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::RingBuffer;
+
+    #[test]
+    fn test_ring_buffer() {
+        let mut rb: RingBuffer<u32> = RingBuffer::with_capacity(8);
+        assert_eq!(rb.is_empty(), true);
+        rb.push(0);
+        rb.push(1);
+        rb.push(2);
+        rb.push(3);
+        rb.push(4);
+        rb.push(5);
+        rb.push(6);
+        assert_eq!(rb.is_full(), false);
+        rb.push(7);
+        // |start 0 1 2 3 4 5 6 7
+
+        assert_eq!(rb.len(), 8);
+        assert_eq!(rb.is_full(), true);
+        assert_eq!(rb.is_empty(), false);
+        assert_eq!(rb.get(0), Some(&0));
+        assert_eq!(rb.get(7), Some(&7));
+        assert_eq!(rb.get(8), None);
+        assert_eq!(rb.get(-1), Some(&7));
+        assert_eq!(rb.get(-8), Some(&0));
+
+        assert_eq!(rb.dequeue(), Some(0));
+        assert_eq!(rb.is_full(), false);
+        assert_eq!(rb.dequeue(), Some(1));
+        assert_eq!(rb.dequeue(), Some(2));
+        assert_eq!(rb.dequeue(), Some(3));
+        assert_eq!(rb.dequeue(), Some(4));
+        assert_eq!(rb.dequeue(), Some(5));
+        assert_eq!(rb.dequeue(), Some(6));
+        assert_eq!(rb.dequeue(), Some(7));
+        assert_eq!(rb.dequeue(), None);
+
+        rb.push(0);
+        rb.push(1);
+        rb.push(2);
+        rb.push(3);
+        rb.push(4);
+        rb.push(5);
+        rb.push(6);
+        assert_eq!(rb.is_full(), false);
+        rb.push(7);
+        rb.push(8);
+        rb.push(9);
+        // 8 9 |start 2 3 4 5 6 7
+        
+        assert_eq!(rb.len(), 8);
+        assert_eq!(rb.is_full(), true);
+        assert_eq!(rb.is_empty(), false);
+        assert_eq!(rb.get(0), Some(&2));
+        assert_eq!(rb.get(1), Some(&3));
+        assert_eq!(rb.get(7), Some(&9));
+        assert_eq!(rb.get(8), None);
+        assert_eq!(rb.get(-1), Some(&9));
+        assert_eq!(rb.get(-2), Some(&8));
+        assert_eq!(rb.get(-8), Some(&2));
+
+        rb.clear();
+        assert_eq!(rb.len(), 0);
+        assert_eq!(rb.is_full(), false);
+        assert_eq!(rb.is_empty(), true);
+    }
+
+}
