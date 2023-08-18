@@ -4,7 +4,8 @@ pub mod binary_search_right;
 pub mod ringbuffer;
 pub mod atomic;
 
-use std::{alloc::{alloc, Layout}, ptr, cell::RefCell};
+use std::{alloc::{alloc, Layout}, ptr, cell::RefCell, thread};
+use ringbuffer::RingBuffer;
 
 struct TreeNode<T>{  
 	value: Option<T>,  
@@ -62,5 +63,13 @@ fn main() {
     // println!("{aa}");
 
     // atomic::test1();
+
+    // let RB: RingBuffer<u32> = RingBuffer::with_capacity(32);
+    // let a = thread::spawn(move || {
+
+    // });
+    // let b = thread::spawn(move || {
+
+    // });
     
 }
