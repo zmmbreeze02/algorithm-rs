@@ -3,6 +3,7 @@ pub mod binary_search_left;
 pub mod binary_search_right;
 pub mod ringbuffer;
 pub mod atomic;
+pub mod knuth_shuffle;
 
 use std::{alloc::{alloc, Layout}, ptr, cell::RefCell, thread};
 use ringbuffer::RingBuffer;
