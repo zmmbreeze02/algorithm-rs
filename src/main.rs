@@ -2,8 +2,9 @@ pub mod binary_search;
 pub mod binary_search_left;
 pub mod binary_search_right;
 pub mod ringbuffer;
-pub mod atomic;
+// pub mod atomic;
 pub mod knuth_shuffle;
+pub mod kmp_search;
 
 use std::{alloc::{alloc, Layout}, ptr, cell::RefCell, thread};
 use ringbuffer::RingBuffer;
