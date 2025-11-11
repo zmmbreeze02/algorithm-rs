@@ -6,19 +6,19 @@ pub mod ringbuffer;
 pub mod knuth_shuffle;
 pub mod kmp_search;
 
-use std::{alloc::{alloc, Layout}, ptr, cell::RefCell, thread};
-use ringbuffer::RingBuffer;
+// use std::{alloc::{alloc, Layout}, ptr, cell::RefCell, thread};
+// use ringbuffer::RingBuffer;
 
-struct TreeNode<T>{  
-	value: Option<T>,  
-	children: Vec<RefCell<TreeNode<T>>>,  
-	parent: Option<Box<RefCell<TreeNode<T>>>>,
-}
+// struct TreeNode<T>{  
+// 	value: Option<T>,  
+// 	children: Vec<RefCell<TreeNode<T>>>,  
+// 	parent: Option<Box<RefCell<TreeNode<T>>>>,
+// }
 
-unsafe fn get_val() -> *const i32 {
-    let mut my_num: Box<i32> = Box::new(10);
-    &*my_num
-}
+// unsafe fn get_val() -> *const i32 {
+//     let mut my_num: Box<i32> = Box::new(10);
+//     &*my_num
+// }
 
 fn main() {
     // let mut tree_root = TreeNode {
